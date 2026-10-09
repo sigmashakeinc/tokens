@@ -1,0 +1,9 @@
+[Unit]
+Description=SigmaShake Tokens aggregate resource envelope
+
+[Slice]
+MemoryMax=512M
+CPUQuota=50%
+
+[Install]
+WantedBy=default.target

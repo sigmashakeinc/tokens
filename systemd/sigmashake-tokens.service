@@ -1,0 +1,44 @@
+[Unit]
+Description=SigmaShake Tokens — Claude Code token usage dashboard
+After=network.target
+# Modest restart limit; this is a passive dashboard, not on the live-stream path.
+StartLimitIntervalSec=300
+StartLimitBurst=10
+StartLimitAction=none
+
+[Service]
+Type=exec
+Slice=sigmashake-tokens.slice
+WorkingDirectory=__WORKDIR__
+# `/usr/bin/env -- <native-bun> <server>` keeps the executable token itself
+# free of systemd-prohibited characters while env immediately execs the exact
+# native Bun path. The ':' prefix disables $VARIABLE expansion in arguments.
+ExecStart=:__ENV_BIN__ -- __BUN_BIN__ __WORKDIR__/src/server.ts
+Restart=always
+RestartSec=3
+
+Environment=TOKENS_PORT=7913
+Environment=TOKENS_HOST=127.0.0.1
+Environment=TOKENS_POLL_MS=5000
+
+# The slice owns the aggregate MemoryMax=512M and CPUQuota=50% envelope shared
+# with one transient worker at a time (poll loop serializes ingest →
+# aggregation → tokenomics). HTTP peak ≈82M — keep a modest ceiling so a
+# worker MemoryMax still fits under the 512M slice.
+MemoryLow=80M
+MemoryMax=128M
+CPUWeight=1000
+
+# Hardening — runs as the user, only needs to read ~/.claude/projects and
+# write to ~/.sigmashake. No network listeners besides loopback.
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=%h/.sigmashake
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=default.target

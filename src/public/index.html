@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SigmaShake Tokens</title>
+    <link rel="stylesheet" href="/app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">σ</span>
+        <span class="brand-name">SigmaShake Tokens</span>
+        <span class="live-pill" id="livePill">
+          <span class="live-dot"></span>
+          <span class="live-label" id="liveLabel">connecting…</span>
+        </span>
+      </div>
+      <div class="controls">
+        <label>Range
+          <select id="rangeSelect">
+            <option value="7" selected>Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="0">All time</option>
+          </select>
+        </label>
+        <button id="refreshBtn" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card filter-card" id="filterCard">
+        <div class="card-header">
+          <h2>Filters</h2>
+          <button id="resetFiltersBtn" type="button" class="btn-link">Reset</button>
+        </div>
+        <div class="filter-grid">
+          <div class="filter-block">
+            <label class="filter-label">Custom range</label>
+            <div class="filter-row">
+              <input type="date" id="customFrom" />
+              <span class="muted">→</span>
+              <input type="date" id="customTo" />
+              <button type="button" id="applyCustomRange" class="btn-sm">Apply</button>
+            </div>
+          </div>
+          <div class="filter-block">
+            <label class="filter-label">Search</label>
+            <input type="text" id="searchInput" placeholder="session id, model, or project…" />
+          </div>
+          <div class="filter-block filter-block-wide">
+            <label class="filter-label">Models <span class="muted" id="modelFilterHint">(click to toggle, all on by default)</span></label>
+            <div class="chip-row" id="modelChips"></div>
+          </div>
+          <div class="filter-block filter-block-wide" id="projectFilterBlock" hidden>
+            <label class="filter-label">Projects</label>
+            <div class="chip-row" id="projectChips"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpis" id="kpis">
+        <div class="kpi" id="kpiCardTotal"><div class="kpi-label">Total tokens</div><div class="kpi-value" id="kpiTotal">—</div><div class="kpi-sub" id="kpiTotalSub"></div></div>
+        <div class="kpi" id="kpiCardCost"><div class="kpi-label">Estimated cost</div><div class="kpi-value" id="kpiCost">—</div><div class="kpi-sub" id="kpiCostSub"></div></div>
+        <div class="kpi" id="kpiCardToday"><div class="kpi-label">Today</div><div class="kpi-value" id="kpiToday">—</div><div class="kpi-sub" id="kpiTodaySub"></div></div>
+        <div class="kpi"><div class="kpi-label">Daily avg</div><div class="kpi-value" id="kpiAvg">—</div><div class="kpi-sub" id="kpiAvgSub"></div></div>
+        <div class="kpi"><div class="kpi-label">Assistant messages</div><div class="kpi-value" id="kpiMsgs">—</div><div class="kpi-sub" id="kpiMsgsSub"></div></div>
+        <div class="kpi"><div class="kpi-label">Sessions scanned</div><div class="kpi-value" id="kpiFiles">—</div><div class="kpi-sub" id="kpiFilesSub"></div></div>
+      </section>
+
+      <section class="card" id="savingsCard">
+        <div class="card-header">
+          <h2>Reducer Savings (STK + headroom)</h2>
+          <span class="muted">token est = bytes ÷ 4</span>
+        </div>
+        <div id="savingsBody"><p class="muted hint">Loading…</p></div>
+      </section>
+
+      <section class="card" id="tokenomicsCard">
+        <div class="card-header">
+          <h2>Tokenomics</h2>
+          <span class="muted">ADVISORY — heuristic analysis of recent sessions</span>
+        </div>
+        <div id="tokenomicsBody"><p class="muted hint">Loading…</p></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Real-time rate</h2>
+          <span class="muted" id="rateUpdated">—</span>
+        </div>
+        <div class="rate-grid" id="rateGrid">
+          <div class="rate" data-window="60"><div class="rate-label">Last 1 min</div><div class="rate-value" data-rate-tokens>—</div><div class="rate-sub" data-rate-sub>—</div></div>
+          <div class="rate" data-window="300"><div class="rate-label">Last 5 min</div><div class="rate-value" data-rate-tokens>—</div><div class="rate-sub" data-rate-sub>—</div></div>
+          <div class="rate" data-window="900"><div class="rate-label">Last 15 min</div><div class="rate-value" data-rate-tokens>—</div><div class="rate-sub" data-rate-sub>—</div></div>
+          <div class="rate" data-window="3600"><div class="rate-label">Last hour</div><div class="rate-value" data-rate-tokens>—</div><div class="rate-sub" data-rate-sub>—</div></div>
+        </div>
+      </section>
+
+      <section class="card" id="throughputCard">
+        <div class="card-header">
+          <h2>Throughput</h2>
+          <span class="muted">burn rate, tok/s — not a model "generation speed" claim</span>
+        </div>
+        <div class="throughput-hero">
+          <div class="throughput-hero-value" id="throughputGlobal">—</div>
+          <div class="throughput-hero-sub" id="throughputGlobalSub">last 60s window</div>
+        </div>
+        <div class="throughput-grid">
+          <div class="drill-card">
+            <h3>Tok/s by model (last 60s)</h3>
+            <div class="chart-wrap chart-wrap-mid"><canvas id="throughputModelChart"></canvas></div>
+          </div>
+          <div class="drill-card">
+            <h3>Tok/s by harness (last 60s)</h3>
+            <div class="chart-wrap chart-wrap-mid"><canvas id="throughputHarnessChart"></canvas></div>
+          </div>
+        </div>
+        <div class="drill-card" style="margin-top: 12px;">
+          <h3>Trend — collected this session <span class="muted" style="font-size:11px;font-weight:400;">(resets on reload, never backfilled)</span></h3>
+          <div class="drill-chart-wrap"><canvas id="throughputSparkChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Daily usage</h2>
+          <div class="legend-toggle">
+            <label><input type="checkbox" id="toggleTokens" checked> Tokens</label>
+            <label><input type="checkbox" id="toggleCost"> Cost ($)</label>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-tall"><canvas id="dailyChart"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Per-day detail</h2>
+          <span class="muted" id="dailyDetailRange"></span>
+        </div>
+        <p class="muted hint">Click a row to drill into hourly breakdown, sessions, and the most expensive messages of the day.</p>
+        <div class="scroll-wrap">
+          <table class="table table-compact table-clickable" id="dailyTable">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Date</th>
+                <th class="r">Msgs</th>
+                <th class="r">Input</th>
+                <th class="r">Output</th>
+                <th class="r">Cache read</th>
+                <th class="r">Cache write</th>
+                <th class="r">Total</th>
+                <th class="r">Cost</th>
+                <th class="r">Avg tok/msg</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="card half">
+          <div class="card-header">
+            <h2>Live feed</h2>
+            <span class="muted" id="liveCount">0 events</span>
+          </div>
+          <ol class="live-feed" id="liveFeed">
+            <li class="live-empty">Waiting for activity…</li>
+          </ol>
+        </div>
+        <div class="card half">
+          <div class="card-header"><h2>By model</h2></div>
+          <div class="chart-wrap chart-wrap-mid"><canvas id="modelChart"></canvas></div>
+          <table class="table" id="modelTable">
+            <thead><tr><th>Model</th><th class="r">Tokens</th><th class="r">Cost</th><th class="r">Msgs</th><th class="r">Tok/s</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" id="harnessCard">
+        <div class="card-header">
+          <h2>By harness</h2>
+          <span class="muted">Claude Code vs Codex · period average</span>
+        </div>
+        <table class="table" id="harnessTable">
+          <thead><tr><th>Harness</th><th class="r">Tok/s</th><th class="r">Total tokens</th><th class="r">Cost</th><th class="r">Msgs</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><h2>By project</h2></div>
+        <div class="chart-wrap chart-wrap-mid"><canvas id="projectChart"></canvas></div>
+        <table class="table" id="projectTable">
+          <thead><tr><th>Project</th><th class="r">Tokens</th><th class="r">Cost</th><th class="r">Sessions</th><th class="r">Last seen</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Top sessions by cost</h2>
+          <span class="muted" id="sessionCountHint"></span>
+        </div>
+        <p class="muted hint">Click a row to inspect every message in that session.</p>
+        <table class="table table-clickable" id="sessionTable">
+          <thead>
+            <tr>
+              <th></th><th>Started</th><th>Project</th><th>Models</th>
+              <th class="r">Tokens</th><th class="r">Cost</th><th class="r">Msgs</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Drawer is mounted as the last child of <body>; markup lives in app.js -->
+
+
+      <footer class="footer">
+        <span id="footerStatus">Loading…</span>
+        <span class="footer-help">Reads <code>~/.claude/projects/*/*.jsonl</code> · Persisted to <code>~/.sigmashake/tokens.sqlite</code></span>
+      </footer>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

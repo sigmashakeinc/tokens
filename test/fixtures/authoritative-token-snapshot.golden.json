@@ -1,0 +1,175 @@
+{
+  "contractVersion": 1,
+  "endpoint": "/api/snapshot",
+  "semantics": {
+    "hudIn": "uncached active input",
+    "hudOut": "Claude provider output plus Codex visible output",
+    "window": "America/Los_Angeles half-open [startMs,endMs)",
+    "unknown": "null, never zero",
+    "legacyPricingInputsUnchanged": true
+  },
+  "snapshot": {
+    "source": "sigmashake-tokens",
+    "window": {
+      "kind": "daily",
+      "timeZone": "America/Los_Angeles",
+      "windowKey": "2026-07-11",
+      "startMs": 1783753200000,
+      "endMs": 1783839600000,
+      "start": "2026-07-11T07:00:00.000Z",
+      "end": "2026-07-12T07:00:00.000Z"
+    },
+    "revision": 42,
+    "updatedAt": 1783796400000,
+    "totalCost": 0.0123,
+    "calls": 2,
+    "rawTotals": {
+      "inputTokens": 300,
+      "rawInputTokens": 1135,
+      "outputTokens": 100,
+      "cacheReadTokens": 800,
+      "cacheWrite5mTokens": 25,
+      "cacheWrite1hTokens": 10,
+      "cost": 0.0123,
+      "messages": 2
+    },
+    "classes": {
+      "input": { "tokens": 300, "complete": true },
+      "cachedRead": { "tokens": 800, "complete": true },
+      "cacheWrite": { "tokens": null, "complete": false },
+      "visibleOutput": { "tokens": 80, "complete": true },
+      "reasoningOutput": { "tokens": null, "complete": false },
+      "complete": false
+    },
+    "hud": {
+      "in": { "tokens": 300, "complete": true },
+      "out": { "tokens": 80, "complete": true }
+    },
+    "providers": {
+      "claude": {
+        "source": "claude",
+        "available": true,
+        "discoveryComplete": true,
+        "defectLines": 0,
+        "rawTotals": {
+          "inputTokens": 100,
+          "rawInputTokens": 635,
+          "outputTokens": 40,
+          "cacheReadTokens": 500,
+          "cacheWrite5mTokens": 25,
+          "cacheWrite1hTokens": 10,
+          "cost": 0.007,
+          "messages": 1
+        },
+        "classes": {
+          "input": { "tokens": 100, "complete": true },
+          "cachedRead": { "tokens": 500, "complete": true },
+          "cacheWrite": { "tokens": 35, "complete": true },
+          "visibleOutput": { "tokens": 40, "complete": true },
+          "reasoningOutput": { "tokens": null, "complete": false },
+          "complete": false
+        },
+        "models": [
+          {
+            "model": "claude-sonnet-4-6",
+            "rawTotals": {
+              "inputTokens": 100,
+              "rawInputTokens": 635,
+              "outputTokens": 40,
+              "cacheReadTokens": 500,
+              "cacheWrite5mTokens": 25,
+              "cacheWrite1hTokens": 10,
+              "cost": 0.007,
+              "messages": 1
+            },
+            "classes": {
+              "input": { "tokens": 100, "complete": true },
+              "cachedRead": { "tokens": 500, "complete": true },
+              "cacheWrite": { "tokens": 35, "complete": true },
+              "visibleOutput": { "tokens": 40, "complete": true },
+              "reasoningOutput": { "tokens": null, "complete": false },
+              "complete": false
+            }
+          }
+        ]
+      },
+      "codex": {
+        "source": "codex",
+        "available": true,
+        "discoveryComplete": true,
+        "defectLines": 0,
+        "rawTotals": {
+          "inputTokens": 200,
+          "rawInputTokens": 500,
+          "outputTokens": 60,
+          "cacheReadTokens": 300,
+          "cacheWrite5mTokens": 0,
+          "cacheWrite1hTokens": 0,
+          "cost": 0.0053,
+          "messages": 1
+        },
+        "classes": {
+          "input": { "tokens": 200, "complete": true },
+          "cachedRead": { "tokens": 300, "complete": true },
+          "cacheWrite": { "tokens": null, "complete": false },
+          "visibleOutput": { "tokens": 40, "complete": true },
+          "reasoningOutput": { "tokens": 20, "complete": true },
+          "complete": false
+        },
+        "models": [
+          {
+            "model": "gpt-5.5-cyber-preview",
+            "rawTotals": {
+              "inputTokens": 200,
+              "rawInputTokens": 500,
+              "outputTokens": 60,
+              "cacheReadTokens": 300,
+              "cacheWrite5mTokens": 0,
+              "cacheWrite1hTokens": 0,
+              "cost": 0.0053,
+              "messages": 1
+            },
+            "classes": {
+              "input": { "tokens": 200, "complete": true },
+              "cachedRead": { "tokens": 300, "complete": true },
+              "cacheWrite": { "tokens": null, "complete": false },
+              "visibleOutput": { "tokens": 40, "complete": true },
+              "reasoningOutput": { "tokens": 20, "complete": true },
+              "complete": false
+            }
+          }
+        ]
+      },
+      "grok": {
+        "source": "grok",
+        "available": false,
+        "discoveryComplete": false,
+        "defectLines": 0,
+        "rawTotals": {
+          "inputTokens": 0,
+          "rawInputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWrite5mTokens": 0,
+          "cacheWrite1hTokens": 0,
+          "cost": 0,
+          "messages": 0
+        },
+        "classes": {
+          "input": { "tokens": null, "complete": false },
+          "cachedRead": { "tokens": null, "complete": false },
+          "cacheWrite": { "tokens": null, "complete": false },
+          "visibleOutput": { "tokens": null, "complete": false },
+          "reasoningOutput": { "tokens": null, "complete": false },
+          "complete": false
+        },
+        "models": []
+      }
+    }
+  },
+  "resetCases": [
+    "windowKey changes",
+    "any class completeness flag changes",
+    "any complete authoritative class total decreases"
+  ]
+}
