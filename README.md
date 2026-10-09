@@ -8,11 +8,20 @@ dashboard that updates while you work.
 Everything stays on your computer. The service listens on `127.0.0.1` only. It
 has no account, no login, and no cloud service.
 
-It runs on Windows, macOS, and Linux.
+## Platforms
+
+| Platform | Support |
+| --- | --- |
+| Windows x64 | Yes |
+| macOS arm64 (Apple Silicon) | Yes |
+| Linux x64 | Yes |
+
+No other platform has a build. On any other platform, the installer prints a
+message and exits with an error.
 
 ## Install
 
-Linux and macOS:
+Linux x64 and macOS arm64:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/sigmashakeinc/tokens/main/install.sh | sh
@@ -49,8 +58,8 @@ You can also download an archive by hand from the
 [releases page](https://github.com/sigmashakeinc/tokens/releases). The archive
 names are `tokens_<version>_<os>_<arch>.tar.gz` (`.zip` on Windows). The values
 for `<os>` are `linux`, `darwin`, and `windows`. The values for `<arch>` are
-`x64` and `arm64`. The release has no Windows `arm64` build. Windows on ARM
-runs the `x64` build.
+The release has exactly three archives: `linux_x64`, `darwin_arm64`, and
+`windows_x64`.
 
 ## Run
 
@@ -206,9 +215,13 @@ They skip on other systems.
 
 ## Releases
 
-A tag that starts with `v` (for example `v0.1.0`) starts the release workflow.
-It builds a binary for each platform with `bun build --compile`, makes the
-archives and `checksums.txt`, and creates the GitHub release.
+SigmaShake builds a binary for each of the three platforms with
+`bun build --compile`. It makes the archives and `checksums.txt`, and creates
+the GitHub release.
+
+## Contributing
+
+SigmaShake maintains this repository. The repository does not accept outside issues or pull requests. Issues and outside pull requests are disabled.
 
 ## License
 

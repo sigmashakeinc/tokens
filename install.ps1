@@ -56,9 +56,12 @@ function Install-Tokens {
     if ($version) { $version = $version.TrimStart('v') }
     if (-not $installDir) { $installDir = Join-Path $env:LOCALAPPDATA 'Programs\tokens' }
 
-    # Only a 64-bit Windows build exists. Windows on ARM runs it through emulation.
+    # Only Windows x64 is supported.
     $cpu = if ($env:PROCESSOR_ARCHITEW6432) { $env:PROCESSOR_ARCHITEW6432 } else { $env:PROCESSOR_ARCHITECTURE }
-    if ($cpu -notin @('AMD64', 'ARM64')) { throw "install.ps1: unsupported CPU: $cpu" }
+    if ($cpu -ne 'AMD64') {
+        [Console]::Error.WriteLine("tokens: unsupported platform windows/$("$cpu".ToLower()); supported: linux x64, macOS arm64, Windows x64")
+        exit 1
+    }
 
     $work = Join-Path ([IO.Path]::GetTempPath()) ("tokens-install-" + [Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $work | Out-Null

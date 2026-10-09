@@ -8,9 +8,6 @@
     "url": "git+https://github.com/sigmashakeinc/tokens.git"
   },
   "homepage": "https://github.com/sigmashakeinc/tokens#readme",
-  "bugs": {
-    "url": "https://github.com/sigmashakeinc/tokens/issues"
-  },
   "bin": {
     "tokens": "src/main.ts",
     "sigmashake-tokens": "tools/sigmashake-tokens-cli.ts"

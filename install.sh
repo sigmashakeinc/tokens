@@ -1,5 +1,5 @@
 #!/bin/sh
-# install.sh - install the `tokens` binary on Linux or macOS.
+# install.sh - install the `tokens` binary on Linux x64 or macOS arm64.
 #
 #   curl -fsSL https://raw.githubusercontent.com/sigmashakeinc/tokens/main/install.sh | sh
 #   curl -fsSL https://raw.githubusercontent.com/sigmashakeinc/tokens/main/install.sh | sh -s -- --version 1.2.3
@@ -106,15 +106,20 @@ done
 VERSION="${VERSION#v}"
 
 # Operating system and CPU.
-case "$(uname -s)" in
-  Linux) OS=linux ;;
-  Darwin) OS=darwin ;;
-  *) die "unsupported operating system: $(uname -s). On Windows, use install.ps1." ;;
-esac
-case "$(uname -m)" in
+RAW_OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+RAW_ARCH="$(uname -m)"
+case "$RAW_ARCH" in
   x86_64 | amd64) ARCH=x64 ;;
   aarch64 | arm64) ARCH=arm64 ;;
-  *) die "unsupported CPU: $(uname -m)" ;;
+  *) ARCH="$RAW_ARCH" ;;
+esac
+case "$RAW_OS/$ARCH" in
+  linux/x64) OS=linux ;;
+  darwin/arm64) OS=darwin ;;
+  *)
+    printf 'tokens: unsupported platform %s/%s; supported: linux x64, macOS arm64, Windows x64\n' "$RAW_OS" "$ARCH" >&2
+    exit 1
+    ;;
 esac
 
 # Tools.
